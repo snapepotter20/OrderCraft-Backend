@@ -1,0 +1,125 @@
+package com.boot.ordercraft.model;
+
+import java.time.LocalDate;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name="OrderCraft_ProductionSch")
+public class ProductionSchedule {
+ 
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private Integer psId;
+	
+	private LocalDate psStartDate;
+	private LocalDate psEndDate;
+	private Integer psQuantity;
+	private String psStatus;
+	private Integer completedQuantity;   // default 0
+	private Integer qcBufferHours;       // optional, e.g. 2 hours
+	
+	@ManyToOne
+	@JoinColumn(name = "productId", nullable = false)
+	private Product psProductId;
+
+	public ProductionSchedule() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
+	public ProductionSchedule(Integer psId, LocalDate psStartDate, LocalDate psEndDate, Integer psQuantity,
+			String psStatus, Integer completedQuantity, Integer qcBufferHours, Product psProductId) {
+		super();
+		this.psId = psId;
+		this.psStartDate = psStartDate;
+		this.psEndDate = psEndDate;
+		this.psQuantity = psQuantity;
+		this.psStatus = psStatus;
+		this.completedQuantity = completedQuantity;
+		this.qcBufferHours = qcBufferHours;
+		this.psProductId = psProductId;
+	}
+
+
+	
+	public Integer getCompletedQuantity() {
+		return completedQuantity;
+	}
+
+
+	public void setCompletedQuantity(Integer completedQuantity) {
+		this.completedQuantity = completedQuantity;
+	}
+
+
+	public Integer getQcBufferHours() {
+		return qcBufferHours;
+	}
+
+
+	public void setQcBufferHours(Integer qcBufferHours) {
+		this.qcBufferHours = qcBufferHours;
+	}
+
+
+	public String getPsStatus() {
+		return psStatus;
+	}
+
+	public void setPsStatus(String psStatus) {
+		this.psStatus = psStatus;
+	}
+
+	public Integer getPsId() {
+		return psId;
+	}
+
+	public void setPsId(Integer psId) {
+		this.psId = psId;
+	}
+
+	public LocalDate getPsStartDate() {
+		return psStartDate;
+	}
+
+	public void setPsStartDate(LocalDate psStartDate) {
+		this.psStartDate = psStartDate;
+	}
+
+	public LocalDate getPsEndDate() {
+		return psEndDate;
+	}
+
+	public void setPsEndDate(LocalDate psEndDate) {
+		this.psEndDate = psEndDate;
+	}
+
+	public Integer getPsQuantity() {
+		return psQuantity;
+	}
+
+	public void setPsQuantity(Integer psQuantity) {
+		this.psQuantity = psQuantity;
+	}
+
+	public Product getPsProductId() {
+		return psProductId;
+	}
+
+	public void setPsProductId(Product psProductId) {
+		this.psProductId = psProductId;
+	}
+
+	
+	
+	
+	
+}

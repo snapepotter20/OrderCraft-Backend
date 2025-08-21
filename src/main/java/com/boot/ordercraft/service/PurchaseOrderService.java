@@ -396,6 +396,33 @@ public class PurchaseOrderService {
         order.setDeliveryStatus("CANCELLED");
         return orderRepository.save(order);
     }
+    
+
+    @Transactional
+    public PurchaseOrder deliverOrder(Long orderId) {
+        PurchaseOrder order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // check stock
+        for (PurchaseOrderItem item : order.getItems()) {
+            Product product = item.getProduct();
+            if (product.getProductQuantity() < item.getQuantity()) {
+                throw new RuntimeException("Insufficient stock for product: " + product.getProductName());
+            }
+        }
+
+        // deduct stock
+        for (PurchaseOrderItem item : order.getItems()) {
+            Product product = item.getProduct();
+            product.setProductQuantity(product.getProductQuantity() - item.getQuantity());
+            productRepository.save(product);
+        }
+
+        // update order status
+        order.setDeliveryStatus("DELIVERED");
+        return orderRepository.save(order);
+    }
+
 
 
 }

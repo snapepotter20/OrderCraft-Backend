@@ -14,7 +14,7 @@ import com.boot.ordercraft.repository.RoleRepository;
 //RoleController.java
 @RestController
 @RequestMapping("ordercraft/roles")
-@CrossOrigin(origins = "http://localhost:53898")
+@CrossOrigin(origins = "http://localhost:4200")
 public class RoleController {
 
  @Autowired

@@ -31,7 +31,8 @@ import com.boot.ordercraft.util.Utilities;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "http://localhost:53898")
+//@CrossOrigin(origins = "http://localhost:53898")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:56160"})
 public class PurchaseOrderController {
 
 	private final PurchaseOrderService orderService;
@@ -46,17 +47,17 @@ public class PurchaseOrderController {
 		this.orderService = orderService;
 	}
 
-//	@GetMapping("/history")
-//	public List<PurchaseOrder> viewOrderHistory(@RequestParam(required = false) String date,
-//			@RequestParam(required = false) String status) {
-//
-//		LocalDate parsedDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date.trim()) : null;
-//
-//		// ✅ Trim and lowercase the status to match DB handling
-//		String cleanStatus = (status != null && !status.isBlank()) ? status.trim().toLowerCase() : null;
-//
-//		return orderService.getOrdersByFilters(parsedDate, cleanStatus);
-//	}
+	@GetMapping("/history")
+	public List<PurchaseOrder> viewOrderHistory(@RequestParam(required = false) String date,
+			@RequestParam(required = false) String status) {
+
+		LocalDate parsedDate = (date != null && !date.isEmpty()) ? LocalDate.parse(date.trim()) : null;
+
+		// ✅ Trim and lowercase the status to match DB handling
+		String cleanStatus = (status != null && !status.isBlank()) ? status.trim().toLowerCase() : null;
+
+		return orderService.getOrdersByFilters(parsedDate, cleanStatus);
+	}
 	
 	@GetMapping("/getallorders")
 	public List<PurchaseOrder> viewOrderHistory(
@@ -146,6 +147,15 @@ public class PurchaseOrderController {
         PurchaseOrder cancelledOrder = orderService.cancelOrder(orderId);
         return ResponseEntity.ok(cancelledOrder);
     }
-
+    
+    @PutMapping("/deliver/{orderId}")
+    public ResponseEntity<?> deliverOrder(@PathVariable Long orderId) {
+        try {
+            PurchaseOrder deliveredOrder = orderService.deliverOrder(orderId);
+            return ResponseEntity.ok(deliveredOrder);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
 
 }

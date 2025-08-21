@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:53898") 
+@CrossOrigin(origins = "http://localhost:4200") 
 @RequestMapping("/ordercraft")
 public class UserController {
 

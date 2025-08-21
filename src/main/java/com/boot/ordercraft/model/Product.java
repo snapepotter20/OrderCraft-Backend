@@ -1,5 +1,7 @@
 package com.boot.ordercraft.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,7 +18,9 @@ import jakarta.persistence.Table;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_seq")
+    @SequenceGenerator(name = "product_seq", sequenceName = "PRODUCT_SEQ", allocationSize = 1)
     @Column(name = "product_id")
     private Long productId;
 
@@ -23,10 +28,13 @@ public class Product {
     private String productName;
 
     private String productDescription;
+    private Long threshold;
+    private Long demandedQuantity;
 
     @ManyToOne
     @JoinColumn(name = "product_category_id")
-    @JsonBackReference
+//    @JsonBackReference
+    @JsonIgnoreProperties("products") 
     private ProductCategory category;
 
 //    @ManyToOne
@@ -40,7 +48,25 @@ public class Product {
 //    @ManyToOne
 //    @JoinColumn(name="RAW_MATERIAL_ID")
 //    private RawMaterials rawMaterialId;
+    
+    
 
+	public Long getDemandedQuantity() {
+		return demandedQuantity;
+	}
+
+	public void setDemandedQuantity(Long demandedQuantity) {
+		this.demandedQuantity = demandedQuantity;
+	}
+
+	public Long getThreshold() {
+		return threshold;
+	}
+
+	public void setThreshold(Long threshold) {
+		this.threshold = threshold;
+	}
+	
 	public Long getProductId() {
 		return productId;
 	}

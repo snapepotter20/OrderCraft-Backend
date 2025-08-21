@@ -15,7 +15,8 @@ import com.boot.ordercraft.repository.RoleRepository;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "http://localhost:53898")
+//@CrossOrigin(origins = "http://localhost:53898")
+@CrossOrigin(origins = "http://localhost:4200")
 public class RawMaterialController {
 
 	 @Autowired

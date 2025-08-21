@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 
@@ -19,19 +22,26 @@ public class RawMaterial {
 	private String description;
 	private String unit_of_measure;
 	private Double price;
+	
+	@ManyToOne
+	@JoinColumn(name="supplier_id")
+	private Suppliers supplier;
+	
 	public RawMaterial() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public RawMaterial(Integer raw_material_id, String material_name, String description, String unit_of_measure,
-			Double price) {
+			Double price,Suppliers supplier) {
 		super();
 		this.raw_material_id = raw_material_id;
 		this.material_name = material_name;
 		this.description = description;
 		this.unit_of_measure = unit_of_measure;
 		this.price = price;
+		this.supplier = supplier;
 	}
+
 	public Integer getRaw_material_id() {
 		return raw_material_id;
 	}
@@ -61,6 +71,12 @@ public class RawMaterial {
 	}
 	public void setPrice(Double price) {
 		this.price = price;
+	}
+	public Suppliers getSupplier() {
+		return supplier;
+	}
+	public void setSupplier(Suppliers supplier) {
+		this.supplier = supplier;
 	}
 	
 	

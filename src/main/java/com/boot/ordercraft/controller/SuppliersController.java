@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/ordercraft/suppliers")
-@CrossOrigin(origins = "http://localhost:53898")
+@CrossOrigin(origins = "http://localhost:4200")
 public class SuppliersController {
 
     @Autowired

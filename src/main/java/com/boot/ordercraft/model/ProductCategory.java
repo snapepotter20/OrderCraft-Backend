@@ -2,6 +2,8 @@ package com.boot.ordercraft.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,7 +19,13 @@ import jakarta.persistence.Table;
 public class ProductCategory {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_category_seq")
+    @SequenceGenerator(
+        name = "product_category_seq",
+        sequenceName = "PRODUCT_CATEGORY_SEQ", // database sequence name
+        allocationSize = 1 // increments by 1
+    )
 	private Long categoryId;
 
 	@Column(nullable = false, unique = true)

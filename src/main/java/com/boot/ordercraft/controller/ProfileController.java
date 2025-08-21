@@ -14,7 +14,8 @@ import com.boot.ordercraft.service.ProfileService;
 
 @RestController
 @RequestMapping("/ordercraft")
-@CrossOrigin(origins = "http://localhost:53898")
+//@CrossOrigin(origins = "http://localhost:53898")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ProfileController {
 
     @Autowired
