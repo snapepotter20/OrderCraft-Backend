@@ -11,6 +11,7 @@ import com.boot.ordercraft.model.InventoryTransactions;
 import com.boot.ordercraft.model.PurchaseOrder;
 import com.boot.ordercraft.model.User;
 import com.boot.ordercraft.service.InventoryTransactionsService;
+import com.boot.ordercraft.util.InventoryPdfGenerator;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 
 import org.apache.poi.ss.usermodel.Row;
@@ -58,6 +59,7 @@ public class InventoryTransactionsController {
         return inventoryTransactionsService.getFilteredTransactions(productName, transactionType, startDate, endDate, performedBy);
     }
     
+    
     @GetMapping("/export/pdf")
     public void exportToPdf(
             @RequestParam(required = false) String productName,
@@ -68,48 +70,15 @@ public class InventoryTransactionsController {
             HttpServletResponse response
     ) throws IOException {
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=transactions.pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=transactions_detailed.pdf");
 
         List<InventoryTransactions> transactions =
                 inventoryTransactionsService.getFilteredTransactions(productName, transactionType, startDate, endDate, performedBy);
 
-        // Build HTML string
-        StringBuilder html = new StringBuilder();
-        html.append("<html><head><style>")
-            .append("table {width: 100%; border-collapse: collapse;}")
-            .append("th, td {border: 1px solid #ddd; padding: 8px;}")
-            .append("th {background-color: #f4f4f4;}")
-            .append("</style></head><body>");
-        html.append("<h2>Inventory Transactions Report</h2>");
-        html.append("<table><tr>")
-            .append("<th>Product</th>")
-            .append("<th>Quantity</th>")
-            .append("<th>Type</th>")
-            .append("<th>Date</th>")
-            .append("<th>Performed By</th>")
-            .append("</tr>");
-
-        for (InventoryTransactions tx : transactions) {
-            html.append("<tr>")
-                .append("<td>").append(tx.getProduct().getProductName()).append("</td>")
-                .append("<td>").append(tx.getQuantity()).append("</td>")
-                .append("<td>").append(tx.getTransactionType()).append("</td>")
-                .append("<td>").append(tx.getTransactionDate()).append("</td>")
-                .append("<td>").append(tx.getUserId().getUsername()).append("</td>")
-                .append("</tr>");
-        }
-
-        html.append("</table></body></html>");
-
-        // Convert HTML to PDF
-        try (OutputStream out = response.getOutputStream()) {
-            PdfRendererBuilder builder = new PdfRendererBuilder();
-            builder.useFastMode();
-            builder.withHtmlContent(html.toString(), null);
-            builder.toStream(out);
-            builder.run();
-        }
+        InventoryPdfGenerator.generatePdf(transactions, response);
     }
+
+
     
     @GetMapping("/export/excel")
     public void exportToExcel(

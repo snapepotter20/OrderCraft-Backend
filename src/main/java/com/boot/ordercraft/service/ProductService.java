@@ -86,7 +86,9 @@ public class ProductService {
     
     public Optional<Product> updateDemandedQuantity(Long productId, Long demandedQuantity, Long userId) {
         return productRepository.findById(productId).map(product -> {
-            product.setDemandedQuantity(demandedQuantity);
+        	 // ✅ Handle null safely
+            Long currentDemand = product.getDemandedQuantity() != null ? product.getDemandedQuantity() : 0L;
+            product.setDemandedQuantity(currentDemand + demandedQuantity);
             Product updatedProduct = productRepository.save(product);
 
             // Create transaction record
