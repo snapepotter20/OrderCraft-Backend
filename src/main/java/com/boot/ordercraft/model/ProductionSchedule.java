@@ -28,6 +28,11 @@ public class ProductionSchedule {
 	@ManyToOne
 	@JoinColumn(name = "productId", nullable = false)
 	private Product psProductId;
+	
+	@ManyToOne
+	@JoinColumn(name = "resourceId")
+	private ProductionResource resource;
+
 
 	public ProductionSchedule() {
 		super();
@@ -50,6 +55,16 @@ public class ProductionSchedule {
 
 
 	
+	public ProductionResource getResource() {
+		return resource;
+	}
+
+
+	public void setResource(ProductionResource resource) {
+		this.resource = resource;
+	}
+
+
 	public Integer getCompletedQuantity() {
 		return completedQuantity;
 	}

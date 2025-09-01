@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.boot.ordercraft.exception.NoResourceAvailableException;
+import com.boot.ordercraft.model.ProductionResource;
 import com.boot.ordercraft.model.ProductionSchedule;
+import com.boot.ordercraft.repository.ProductionResourceRepository;
 import com.boot.ordercraft.repository.ProductionScheduleRepository;
 
 import jakarta.transaction.Transactional;
@@ -19,16 +22,47 @@ public class ProductionScheduleService {
 
  @Autowired
  private ProductionScheduleRepository scheduleRepo;
+ 
+ @Autowired
+ private ProductionResourceRepository resourceRepo;
 
 // public ProductionSchedule createSchedule(ProductionSchedule schedule) { schedule.setPsStatus("SCHEDULED"); return scheduleRepo.save(schedule); } 
 // public List<ProductionSchedule> getAllScheduledProducts() { return scheduleRepo.findByPsStatus("SCHEDULED"); }
 
+// public ProductionSchedule createSchedule(ProductionSchedule schedule) {
+//     schedule.setPsStatus("SCHEDULED");
+//    schedule.setCompletedQuantity(0);
+//    if(schedule.getQcBufferHours() == null) schedule.setQcBufferHours(2);
+//     return scheduleRepo.save(schedule);
+// }
+ 
  public ProductionSchedule createSchedule(ProductionSchedule schedule) {
-     schedule.setPsStatus("SCHEDULED");
-     schedule.setCompletedQuantity(0);
-     if(schedule.getQcBufferHours() == null) schedule.setQcBufferHours(2);
-     return scheduleRepo.save(schedule);
- }
+	    // check product demand quantity
+	    if (schedule.getPsQuantity() == null || schedule.getPsQuantity() <= 0) {
+	        throw new RuntimeException("Invalid product quantity");
+	    }
+
+	    // check if resource available
+	    var resourceOpt = resourceRepo.findFirstByStatus("AVAILABLE");
+//	    if (resourceOpt.isEmpty()) {
+//	        throw new RuntimeException("All production resources are busy. Try scheduling later.");
+//	    }
+	    if (resourceOpt.isEmpty()) {
+	        throw new NoResourceAvailableException("All production resources are busy. Try scheduling later.");
+	    }
+
+
+	    ProductionResource resource = resourceOpt.get();
+	    resource.setStatus("BUSY");
+	    resourceRepo.save(resource);
+
+	    schedule.setPsStatus("SCHEDULED");
+	    schedule.setCompletedQuantity(0);
+	    if(schedule.getQcBufferHours() == null) schedule.setQcBufferHours(2);
+	    schedule.setResource(resource);
+
+	    return scheduleRepo.save(schedule);
+	}
 
  public List<ProductionSchedule> getAllScheduledProducts() {
      return scheduleRepo.findAll();
@@ -72,13 +106,30 @@ public class ProductionScheduleService {
      scheduleRepo.saveAll(inProgress);
  }
 
- // Supervisor manually dispatch
+//  Supervisor manually dispatch
+// public ProductionSchedule dispatchProduct(Integer psId) {
+//     ProductionSchedule ps = scheduleRepo.findById(psId)
+//             .orElseThrow(() -> new RuntimeException("Schedule not found"));
+//     ps.setPsStatus("DISPATCHED");
+//     return scheduleRepo.save(ps);
+// }
+ 
  public ProductionSchedule dispatchProduct(Integer psId) {
-     ProductionSchedule ps = scheduleRepo.findById(psId)
-             .orElseThrow(() -> new RuntimeException("Schedule not found"));
-     ps.setPsStatus("DISPATCHED");
-     return scheduleRepo.save(ps);
- }
+	    ProductionSchedule ps = scheduleRepo.findById(psId)
+	            .orElseThrow(() -> new RuntimeException("Schedule not found"));
+
+	    ps.setPsStatus("DISPATCHED");
+
+	    // free resource
+	    ProductionResource resource = ps.getResource();
+	    if (resource != null) {
+	        resource.setStatus("AVAILABLE");
+	        resourceRepo.save(resource);
+	    }
+
+	    return scheduleRepo.save(ps);
+	}
+
  
  public List<ProductionSchedule> getDeliveredProducts() {
 	    return scheduleRepo.findByPsStatus("DELIVERED");
