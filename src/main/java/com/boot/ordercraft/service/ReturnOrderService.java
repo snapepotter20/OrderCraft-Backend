@@ -157,4 +157,26 @@ public class ReturnOrderService {
                          order.getPurchaseOrder().getPurchaseOrderId().equals(purchaseOrderId)))
                 .collect(Collectors.toList());
     }
+    
+    @Transactional
+    public ReturnOrder approveReturnOrder(Long id) {
+        ReturnOrder returnOrder = returnOrderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Return order not found"));
+
+        if ("APPROVED".equalsIgnoreCase(returnOrder.getRstatus())) {
+            throw new IllegalStateException("Already approved");
+        }
+
+        // Update product stock
+        for (ReturnOrderItem item : returnOrder.getItems()) {
+            Product product = item.getProduct();
+            product.setProductQuantity(product.getProductQuantity() + item.getReturnQuantity());
+            productRepository.save(product);
+        }
+
+        // Update return order status
+        returnOrder.setRstatus("APPROVED");
+        return returnOrderRepository.save(returnOrder);
+    }
+
 }

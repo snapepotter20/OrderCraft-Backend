@@ -37,7 +37,7 @@ public class ReturnOrderController {
     }
 
 
-    @GetMapping("/getallreturnedorders")
+    @GetMapping("/inventory/getallreturnedorders")
     public List<ReturnOrder> getAllReturnOrders() {
         return returnOrderService.getAllReturnOrders();
     }
@@ -55,4 +55,15 @@ public class ReturnOrderController {
     ) {
         return returnOrderService.filterReturnOrders(returnId, rdate, purchaseOrderId);
     }
+    
+    @PutMapping("/inventory/approveReturnOrder/{id}")
+    public ResponseEntity<?> approveReturnOrder(@PathVariable Long id) {
+        try {
+            ReturnOrder approvedOrder = returnOrderService.approveReturnOrder(id);
+            return ResponseEntity.ok(approvedOrder);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Approval failed");
+        }
+    }
+
 }
