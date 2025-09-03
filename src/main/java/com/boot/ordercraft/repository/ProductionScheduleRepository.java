@@ -72,5 +72,7 @@ public interface ProductionScheduleRepository extends JpaRepository<ProductionSc
 	    List<ProductionSchedule> findByPsEndDateLessThanEqualAndPsStatus(LocalDate now, String status);
 
 	    List<ProductionSchedule> findByPsProductId_ProductId(Long productId);
+	    
+	    List<ProductionSchedule> findByPsDeadline(LocalDate deadline);
 
 }

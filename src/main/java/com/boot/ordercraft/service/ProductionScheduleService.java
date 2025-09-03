@@ -60,6 +60,11 @@ public class ProductionScheduleService {
 	    schedule.setCompletedQuantity(0);
 	    if(schedule.getQcBufferHours() == null) schedule.setQcBufferHours(2);
 	    schedule.setResource(resource);
+	    
+	    if (schedule.getPsEndDate() != null) {
+	        int extraDays = (int) Math.ceil(schedule.getQcBufferHours() / 24.0);
+	        schedule.setPsDeadline(schedule.getPsEndDate().plusDays(extraDays));
+	    }
 
 	    return scheduleRepo.save(schedule);
 	}
@@ -89,9 +94,18 @@ public class ProductionScheduleService {
      });
 
      // Move QUALITY_CHECK → READY
-     var toReady = scheduleRepo.findByPsEndDateLessThanEqualAndPsStatus(now.minusDays(0), "QUALITY_CHECK");
-     toReady.forEach(ps -> ps.setPsStatus("READY"));
+//     var toReady = scheduleRepo.findByPsEndDateLessThanEqualAndPsStatus(now.minusDays(0), "QUALITY_CHECK");
+//     toReady.forEach(ps -> ps.setPsStatus("READY"));
+//     scheduleRepo.saveAll(toReady);
+     
+  // Move QUALITY_CHECK → READY
+     var toReady = scheduleRepo.findByPsEndDateLessThanEqualAndPsStatus(now, "QUALITY_CHECK");
+     toReady.forEach(ps -> {
+         ps.setPsStatus("READY");
+         ps.setCompletedQuantity(ps.getPsQuantity()); // 🔹 mark as fully completed
+     });
      scheduleRepo.saveAll(toReady);
+
      
      var inProgress = scheduleRepo.findByPsStatus("IN_PROGRESS");
      inProgress.forEach(ps -> {

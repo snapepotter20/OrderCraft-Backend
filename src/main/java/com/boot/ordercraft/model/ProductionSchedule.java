@@ -20,6 +20,7 @@ public class ProductionSchedule {
 	
 	private LocalDate psStartDate;
 	private LocalDate psEndDate;
+	 private LocalDate psDeadline; 
 	private Integer psQuantity;
 	private String psStatus;
 	private Integer completedQuantity;   // default 0
@@ -40,20 +41,30 @@ public class ProductionSchedule {
 	}
 
 
-	public ProductionSchedule(Integer psId, LocalDate psStartDate, LocalDate psEndDate, Integer psQuantity,
-			String psStatus, Integer completedQuantity, Integer qcBufferHours, Product psProductId) {
+    public ProductionSchedule(Integer psId, LocalDate psStartDate, LocalDate psEndDate, LocalDate psDeadline,
+			Integer psQuantity, String psStatus, Integer completedQuantity, Integer qcBufferHours, Product psProductId,
+			ProductionResource resource) {
 		super();
 		this.psId = psId;
 		this.psStartDate = psStartDate;
 		this.psEndDate = psEndDate;
+		this.psDeadline = psDeadline;
 		this.psQuantity = psQuantity;
 		this.psStatus = psStatus;
 		this.completedQuantity = completedQuantity;
 		this.qcBufferHours = qcBufferHours;
 		this.psProductId = psProductId;
+		this.resource = resource;
 	}
 
 
+	public LocalDate getPsDeadline() {
+        return psDeadline;
+    }
+
+    public void setPsDeadline(LocalDate psDeadline) {
+        this.psDeadline = psDeadline;
+    }
 	
 	public ProductionResource getResource() {
 		return resource;
