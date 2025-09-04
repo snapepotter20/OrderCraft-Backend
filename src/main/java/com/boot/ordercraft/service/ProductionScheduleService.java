@@ -2,6 +2,7 @@ package com.boot.ordercraft.service;
 
 //ProductionScheduleService.java
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,17 @@ import com.boot.ordercraft.repository.ProductionScheduleRepository;
 
 import jakarta.transaction.Transactional;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
 
 @Service
 public class ProductionScheduleService {
@@ -148,5 +157,63 @@ public class ProductionScheduleService {
  public List<ProductionSchedule> getDeliveredProducts() {
 	    return scheduleRepo.findByPsStatus("DELIVERED");
 	}
+ 
+ public void exportDeliveredToExcel(List<ProductionSchedule> delivered, OutputStream os) throws IOException {
+     Workbook workbook = new XSSFWorkbook();
+     Sheet sheet = workbook.createSheet("Delivered Products");
+
+     Row header = sheet.createRow(0);
+     String[] columns = {"ID", "Product", "Quantity", "Start", "End", "Deadline", "Status"};
+     for (int i = 0; i < columns.length; i++) {
+         header.createCell(i).setCellValue(columns[i]);
+     }
+
+     int rowIdx = 1;
+     for (ProductionSchedule ps : delivered) {
+         Row row = sheet.createRow(rowIdx++);
+         row.createCell(0).setCellValue(ps.getPsId());
+         row.createCell(1).setCellValue(ps.getPsProductId().getProductName());
+         row.createCell(2).setCellValue(ps.getPsQuantity());
+         row.createCell(3).setCellValue(ps.getPsStartDate().toString());
+         row.createCell(4).setCellValue(ps.getPsEndDate().toString());
+         row.createCell(5).setCellValue(ps.getPsDeadline() != null ? ps.getPsDeadline().toString() : "-");
+         row.createCell(6).setCellValue(ps.getPsStatus());
+     }
+
+     workbook.write(os);
+     workbook.close();
+ }
+
+ public void exportDeliveredToPDF(List<ProductionSchedule> delivered, OutputStream os) throws IOException {
+     Document document = new Document();
+     try {
+         PdfWriter.getInstance(document, os);
+         document.open();
+
+         document.add(new Paragraph("Delivered Products Report"));
+         document.add(new Paragraph("Generated on: " + LocalDate.now().toString()));
+         document.add(Chunk.NEWLINE);
+
+         PdfPTable table = new PdfPTable(7);
+         Stream.of("ID", "Product", "Quantity", "Start", "End", "Deadline", "Status")
+               .forEach(col -> table.addCell(new PdfPCell(new Phrase(col))));
+
+         for (ProductionSchedule ps : delivered) {
+             table.addCell(String.valueOf(ps.getPsId()));
+             table.addCell(ps.getPsProductId().getProductName());
+             table.addCell(String.valueOf(ps.getPsQuantity()));
+             table.addCell(ps.getPsStartDate().toString());
+             table.addCell(ps.getPsEndDate().toString());
+             table.addCell(ps.getPsDeadline() != null ? ps.getPsDeadline().toString() : "-");
+             table.addCell(ps.getPsStatus());
+         }
+
+         document.add(table);
+     } catch (DocumentException e) {
+         throw new IOException(e);
+     } finally {
+         document.close();
+     }
+ }
 
 }

@@ -1,5 +1,6 @@
 package com.boot.ordercraft.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import com.boot.ordercraft.model.Product;
 import com.boot.ordercraft.model.ProductionSchedule;
 import com.boot.ordercraft.service.ProductService;
 import com.boot.ordercraft.service.ProductionScheduleService;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 
 @RestController
@@ -65,6 +68,24 @@ public class ProductionScheduleController {
     public ResponseEntity<List<ProductionSchedule>> getDeliveredProducts() {
         List<ProductionSchedule> delivered = productionScheduleService.getDeliveredProducts();
         return ResponseEntity.ok(delivered);
+    }
+    
+    @GetMapping("/export-delivered/xls")
+    public void exportDeliveredToExcel(HttpServletResponse response) throws IOException {
+        response.setContentType("application/vnd.ms-excel");
+        response.setHeader("Content-Disposition", "attachment; filename=delivered_products.xlsx");
+
+        List<ProductionSchedule> delivered = productionScheduleService.getDeliveredProducts();
+        productionScheduleService.exportDeliveredToExcel(delivered, response.getOutputStream());
+    }
+
+    @GetMapping("/export-delivered/pdf")
+    public void exportDeliveredToPDF(HttpServletResponse response) throws IOException {
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=delivered_products.pdf");
+
+        List<ProductionSchedule> delivered = productionScheduleService.getDeliveredProducts();
+        productionScheduleService.exportDeliveredToPDF(delivered, response.getOutputStream());
     }
 
 
