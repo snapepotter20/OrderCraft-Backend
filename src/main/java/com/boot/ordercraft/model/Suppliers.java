@@ -1,6 +1,7 @@
 package com.boot.ordercraft.model;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,8 +19,17 @@ public class Suppliers {
    private Long supplier_id;
    private String supplier_name;
    private String contact_name;
-   private String contact_email;
+   
+   @Column(name = "contact_email" , unique = true, nullable = false)  // maps DB column contact_email → Java field contactEmail
+   private String contactEmail;
+   
+   @Column(unique = true, nullable = false)
    private String phone;
+   
+   private Integer rating;
+   
+   @Column(name = "contract_file")
+   private String contractFile;
    
    @OneToOne(cascade = CascadeType.ALL)
    @JoinColumn(name = "address_id", referencedColumnName = "addressId") // foreign key in OrderManagementUsers table
@@ -34,16 +44,36 @@ public Suppliers() {
 	// TODO Auto-generated constructor stub
 }
 
-public Suppliers(Long supplier_id, String supplier_name, String contact_name, String contact_email, String phone,
-		Address address, User user) {
+
+public Suppliers(Long supplier_id, String supplier_name, String contact_name, String contactEmail, String phone,
+		Integer rating, String contractFile, Address address, User user) {
 	super();
 	this.supplier_id = supplier_id;
 	this.supplier_name = supplier_name;
 	this.contact_name = contact_name;
-	this.contact_email = contact_email;
+	this.contactEmail = contactEmail;
 	this.phone = phone;
+	this.rating = rating;
+	this.contractFile = contractFile;
 	this.address = address;
 	this.user = user;
+}
+
+public String getContractFile() {
+    return contractFile;
+}
+
+public void setContractFile(String contractFile) {
+    this.contractFile = contractFile;
+}
+
+
+public Integer getRating() {
+	return rating;
+}
+
+public void setRating(Integer rating) {
+	this.rating = rating;
 }
 
 public Long getSupplier_id() {
@@ -71,11 +101,11 @@ public void setContact_name(String contact_name) {
 }
 
 public String getContact_email() {
-	return contact_email;
+	return contactEmail;
 }
 
-public void setContact_email(String contact_email) {
-	this.contact_email = contact_email;
+public void setContact_email(String contactEmail) {
+	this.contactEmail = contactEmail;
 }
 
 public String getPhone() {
@@ -105,7 +135,7 @@ public void setUser(User user) {
 @Override
 public String toString() {
 	return "Suppliers [supplier_id=" + supplier_id + ", supplier_name=" + supplier_name + ", contact_name="
-			+ contact_name + ", contact_email=" + contact_email + ", phone=" + phone + ", address=" + address
+			+ contact_name + ", contact_email=" + contactEmail + ", phone=" + phone + ", address=" + address
 			+ ", user=" + user + "]";
 }
    
