@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.boot.ordercraft.model.Product;
 import com.boot.ordercraft.model.ProductionSchedule;
+import com.boot.ordercraft.repository.ProductDemandRepository;
 import com.boot.ordercraft.service.ProductService;
 import com.boot.ordercraft.service.ProductionScheduleService;
 
@@ -30,20 +31,42 @@ public class ProductionScheduleController {
 	
 	@Autowired
 	private ProductionScheduleService productionScheduleService;
+	
+	 @Autowired
+	 private ProductDemandRepository productDemandRepo;
 
-	@PostMapping("/schedule-production/{productId}")
-	public ResponseEntity<ProductionSchedule> scheduleProduction(
-	        @PathVariable Long productId,
-	        @RequestBody ProductionSchedule schedule) {
+//	@PostMapping("/schedule-production/{productId}")
+//	public ResponseEntity<ProductionSchedule> scheduleProduction(
+//	        @PathVariable Long productId,
+//	        @RequestBody ProductionSchedule schedule) {
+//
+//	    return productService.getProductById(productId)
+//	            .map(product -> {
+//	                schedule.setPsProductId(product);
+//	                ProductionSchedule saved = productionScheduleService.createSchedule(schedule);
+//	                return ResponseEntity.ok(saved);
+//	            })
+//	            .orElse(ResponseEntity.notFound().build());
+//	}
+	
+	 @PostMapping("/schedule-production/{demandId}")
+	 public ResponseEntity<ProductionSchedule> scheduleProduction(
+	         @PathVariable Long demandId,
+	         @RequestBody ProductionSchedule schedule) {
 
-	    return productService.getProductById(productId)
-	            .map(product -> {
-	                schedule.setPsProductId(product);
-	                ProductionSchedule saved = productionScheduleService.createSchedule(schedule);
-	                return ResponseEntity.ok(saved);
-	            })
-	            .orElse(ResponseEntity.notFound().build());
-	}
+	     return productDemandRepo.findById(demandId)
+	             .map(demand -> {
+	                 // Set the product from the demand
+	                 schedule.setPsProductId(demand.getProduct());
+
+	                 // Create schedule and link it to the single demand
+	                 ProductionSchedule saved = productionScheduleService.createScheduleForSingleDemand(schedule, demand);
+	                 return ResponseEntity.ok(saved);
+	             })
+	             .orElse(ResponseEntity.notFound().build());
+	 }
+
+
 
 	@PostMapping("/deliver-product/{productId}")
 	public ResponseEntity<Product> deliverProduct(@PathVariable Long productId) {

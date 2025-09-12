@@ -1,6 +1,8 @@
 package com.boot.ordercraft.controller;
 
 import java.io.IOException;
+import org.springframework.data.domain.Page;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -59,6 +61,7 @@ public class InventoryTransactionsController {
         return inventoryTransactionsService.getFilteredTransactions(productName, transactionType, startDate, endDate, performedBy);
     }
     
+
     
     @GetMapping("/export/pdf")
     public void exportToPdf(
@@ -77,8 +80,7 @@ public class InventoryTransactionsController {
 
         InventoryPdfGenerator.generatePdf(transactions, response);
     }
-
-
+    
     
     @GetMapping("/export/excel")
     public void exportToExcel(
@@ -119,5 +121,7 @@ public class InventoryTransactionsController {
             workbook.write(response.getOutputStream());
         }
     }
+    
+
     
 }

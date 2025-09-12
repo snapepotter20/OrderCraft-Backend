@@ -64,21 +64,21 @@ public class ProductController {
 //                .orElse(ResponseEntity.notFound().build());
 //    }
     
-    @PatchMapping("/updateDemand/{productId}")
-    public ResponseEntity<Product> updateDemand(
-            @PathVariable Long productId,
-            @RequestParam Long demandedQuantity, // query param
-            @RequestParam Long userId) {
-        return productService.updateDemandedQuantity(productId, demandedQuantity, userId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+//    @PatchMapping("/updateDemand/{productId}")
+//    public ResponseEntity<Product> updateDemand(
+//            @PathVariable Long productId,
+//            @RequestParam Long demandedQuantity, // query param
+//            @RequestParam Long userId) {
+//        return productService.updateDemandedQuantity(productId, demandedQuantity, userId)
+//                .map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.notFound().build());
+//    }
 
     
-    @GetMapping("/demanded/count")
-    public long getDemandedProductsCount() {
-        return productService.countProductsWithDemand();
-    }
+//    @GetMapping("/demanded/count")
+//    public long getDemandedProductsCount() {
+//        return productService.countProductsWithDemand();
+//    }
     
 
 //@GetMapping("/demanded")

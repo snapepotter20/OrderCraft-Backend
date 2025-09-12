@@ -1,6 +1,11 @@
 package com.boot.ordercraft.service;
 
 import java.time.LocalDate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,6 +120,6 @@ public class InventoryTransactionsService {
             return cb.and(predicates.toArray(new Predicate[0]));
         });
     }
-
+    
 
 }

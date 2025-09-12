@@ -84,30 +84,30 @@ public class ProductService {
 //        });
 //    }
     
-    public Optional<Product> updateDemandedQuantity(Long productId, Long demandedQuantity, Long userId) {
-        return productRepository.findById(productId).map(product -> {
-        	 // ✅ Handle null safely
-            Long currentDemand = product.getDemandedQuantity() != null ? product.getDemandedQuantity() : 0L;
-            product.setDemandedQuantity(currentDemand + demandedQuantity);
-            Product updatedProduct = productRepository.save(product);
-
-            // Create transaction record
-            InventoryTransactions transaction = new InventoryTransactions();
-            transaction.setProduct(product);
-            transaction.setTransactionType("IN");
-            transaction.setQuantity(demandedQuantity);
-            transaction.setTransactionDate(LocalDate.now());
-            transaction.setReference("Demand Created");
-            transaction.setReference("Product #" + productId);
-
-            User user = userRepository.findById(userId).orElse(null);
-            transaction.setUserId(user);
-
-            inventoryTransactionsRepository.save(transaction);
-
-            return updatedProduct;
-        });
-    }
+//    public Optional<Product> updateDemandedQuantity(Long productId, Long demandedQuantity, Long userId) {
+//        return productRepository.findById(productId).map(product -> {
+//        	 // ✅ Handle null safely
+//            Long currentDemand = product.getDemandedQuantity() != null ? product.getDemandedQuantity() : 0L;
+//            product.setDemandedQuantity(currentDemand + demandedQuantity);
+//            Product updatedProduct = productRepository.save(product);
+//
+//            // Create transaction record
+//            InventoryTransactions transaction = new InventoryTransactions();
+//            transaction.setProduct(product);
+//            transaction.setTransactionType("IN");
+//            transaction.setQuantity(demandedQuantity);
+//            transaction.setTransactionDate(LocalDate.now());
+//            transaction.setReference("Demand Created");
+//            transaction.setReference("Product #" + productId);
+//
+//            User user = userRepository.findById(userId).orElse(null);
+//            transaction.setUserId(user);
+//
+//            inventoryTransactionsRepository.save(transaction);
+//
+//            return updatedProduct;
+//        });
+//    }
     
     public Long countProductsWithDemand() {
         return productRepository.countByDemandedQuantityGreaterThan(0L);

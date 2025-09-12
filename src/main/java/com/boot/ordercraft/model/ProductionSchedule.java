@@ -1,13 +1,19 @@
 package com.boot.ordercraft.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -33,6 +39,11 @@ public class ProductionSchedule {
 	@ManyToOne
 	@JoinColumn(name = "resourceId")
 	private ProductionResource resource;
+	
+	   // ✅ Back-reference to ProductDemand
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<ProductDemand> demands = new ArrayList<>();
 
 
 	public ProductionSchedule() {
@@ -40,10 +51,9 @@ public class ProductionSchedule {
 		// TODO Auto-generated constructor stub
 	}
 
-
-    public ProductionSchedule(Integer psId, LocalDate psStartDate, LocalDate psEndDate, LocalDate psDeadline,
+	public ProductionSchedule(Integer psId, LocalDate psStartDate, LocalDate psEndDate, LocalDate psDeadline,
 			Integer psQuantity, String psStatus, Integer completedQuantity, Integer qcBufferHours, Product psProductId,
-			ProductionResource resource) {
+			ProductionResource resource, List<ProductDemand> demands) {
 		super();
 		this.psId = psId;
 		this.psStartDate = psStartDate;
@@ -55,8 +65,16 @@ public class ProductionSchedule {
 		this.qcBufferHours = qcBufferHours;
 		this.psProductId = psProductId;
 		this.resource = resource;
+		this.demands = demands;
 	}
 
+	public List<ProductDemand> getDemands() {
+		return demands;
+	}
+
+	public void setDemands(List<ProductDemand> demands) {
+		this.demands = demands;
+	}
 
 	public LocalDate getPsDeadline() {
         return psDeadline;
