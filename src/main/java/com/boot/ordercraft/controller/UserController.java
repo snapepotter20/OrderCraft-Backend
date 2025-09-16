@@ -57,9 +57,17 @@ public class UserController {
             User user = userOpt.get();
 
             // Check if account is locked
+//            if (user.getAccountLockedUntil() != null && user.getAccountLockedUntil().isAfter(LocalDateTime.now())) {
+//                return ResponseEntity.status(403).body(Map.of("error", "Account is locked until " + user.getAccountLockedUntil()));
+//            }
+            
+         // Check if account is locked
             if (user.getAccountLockedUntil() != null && user.getAccountLockedUntil().isAfter(LocalDateTime.now())) {
-                return ResponseEntity.status(403).body(Map.of("error", "Account is locked until " + user.getAccountLockedUntil()));
+                return ResponseEntity.status(403).body(Map.of(
+                    "error", "Your account has been locked until " + user.getAccountLockedUntil() + ". Please try again later."
+                ));
             }
+
 
             try {
                 authManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
@@ -187,6 +195,22 @@ public class UserController {
 
         return ResponseEntity.ok(Map.of("message", "User account unlocked"));
     }
+    
+    
+    @PutMapping("/lockuser/{id}")
+    public ResponseEntity<?> lockUser(@PathVariable Long id) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("error", "User not found"));
+        }
+
+        User user = userOpt.get();
+        user.setAccountLockedUntil(LocalDateTime.now().plusHours(12)); // lock for 12 hours (customizable)
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of("message", "User account locked for 12 hours"));
+    }
+
     
  // 1. Send OTP
     @PostMapping("/send-otp")
