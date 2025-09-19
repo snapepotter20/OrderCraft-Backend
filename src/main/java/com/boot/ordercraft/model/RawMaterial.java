@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -15,7 +16,15 @@ import jakarta.persistence.Table;
 public class RawMaterial {
 	
 	@Id
-	@GeneratedValue(strategy= GenerationType.IDENTITY)
+//	@GeneratedValue(strategy= GenerationType.AUTO)
+	
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "raw_material_seq")
+	@SequenceGenerator(
+	    name = "raw_material_seq",
+	    sequenceName = "RAW_MATERIAL_SEQ",  // matches Oracle existing sequence
+	    allocationSize = 1                  // keep in sync with Oracle sequence
+	)
+
 	
 	private Integer raw_material_id;
 	private String material_name;

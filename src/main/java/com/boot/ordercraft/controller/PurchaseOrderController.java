@@ -32,7 +32,7 @@ import com.boot.ordercraft.util.Utilities;
 @RestController
 @RequestMapping("/api/orders")
 //@CrossOrigin(origins = "http://localhost:53898")
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:56160"})
+@CrossOrigin(origins = "http://localhost:4200")
 public class PurchaseOrderController {
 
 	private final PurchaseOrderService orderService;
